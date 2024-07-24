@@ -1,12 +1,16 @@
 "use client"
 import { openModal } from "@/redux/slices/modalSlice";
-import { AppDispatch } from "@/redux/store";
+import { AppDispatch, RootState } from "@/redux/store";
 import Image from "next/image";
 import React from "react";
 import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 const Header: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  console.log(user);
 
   const openRegisterModal = () => {
     dispatch(openModal("register"));
