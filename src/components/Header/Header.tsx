@@ -1,16 +1,26 @@
-"use client"
+"use client";
+
+import { deleteCookie } from "@/app/api/login/route";
+import { useAuth } from "@/hooks/useAuth";
+import { clearUser } from "@/redux/slices/authSlice";
 import { openModal } from "@/redux/slices/modalSlice";
-import { AppDispatch, RootState } from "@/redux/store";
+import { AppDispatch } from "@/redux/store";
 import Image from "next/image";
-import React from "react";
-import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 
 const Header: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.auth.user);
+  const auth = useAuth();
+  const router = useRouter();
+  const [email, setEmail] = useState<string | null>(null);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
 
-  console.log(user);
+  useEffect(() => {
+    setEmail(localStorage.getItem("email"));
+    setProfileImage(localStorage.getItem("profileImage"));
+  }, []);
 
   const openRegisterModal = () => {
     dispatch(openModal("register"));
@@ -18,6 +28,13 @@ const Header: React.FC = () => {
 
   const openLoginModal = () => {
     dispatch(openModal("login"));
+  };
+
+  const handleLogoutClick = async () => {
+    await deleteCookie("token");
+    dispatch(clearUser());
+    localStorage.clear();
+    router.push("/");
   };
 
   return (
@@ -33,18 +50,37 @@ const Header: React.FC = () => {
           />
         </a>
       </div>
-      <div className="mr-4">
-        <button onClick={openLoginModal}>
-          <span className="mr-4 text-black hover:text-gray-600">
-            Login
-          </span>{" "}
-        </button>
-        <button onClick={openRegisterModal}>
-          <span  className="text-black hover:text-gray-600">
-            Sign Up
-          </span>{" "}
-        </button>
-      </div>
+      {!auth ? (
+        <div className="mr-4">
+          <button onClick={openLoginModal}>
+            <span className="mr-4 text-black hover:text-gray-600">Login</span>
+          </button>
+          <button onClick={openRegisterModal}>
+            <span className="text-black hover:text-gray-600">Sign Up</span>
+          </button>
+        </div>
+      ) : (
+        <div className="flex items-center">
+          <div className="mr-4">
+            <button>
+              <span className="mr-4 text-blue-500">Jobs List</span>
+            </button>
+            <button onClick={handleLogoutClick}>
+              <span className="text-black hover:text-gray-600">Logout</span>
+            </button>
+            <span className="ml-4">{email?.replace(/"/g, "")}</span>
+          </div>
+          <div className="ml-4">
+            <Image
+              src={profileImage?.replace(/"/g, "") || ""} 
+              alt="Profile Picture"
+              width={30}
+              height={30}
+              className="rounded-full"
+            />
+          </div>
+        </div>
+      )}
     </header>
   );
 };

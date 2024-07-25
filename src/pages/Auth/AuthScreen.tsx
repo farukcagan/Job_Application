@@ -1,51 +1,59 @@
 "use client";
-
-import { closeModal, openModal } from "@/redux/slices/modalSlice";
-import { AppDispatch, RootState } from "@/redux/store";
 import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AiOutlineClose } from "react-icons/ai";
-import apiCall from "@/utils/ApiCall";
+import Swal from "sweetalert2";
+import { AppDispatch, RootState } from "@/redux/store";
+import { closeModal, openModal } from "@/redux/slices/modalSlice";
 import { setUser } from "@/redux/slices/authSlice";
+import { getTokenAndSetCookie } from "@/app/api/login/route";
+import { useRouter } from "next/navigation";
 
 const AuthModal: React.FC = () => {
   const { isOpen, type } = useSelector((state: RootState) => state.modal);
   const dispatch: AppDispatch = useDispatch();
+  const router = useRouter();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const REGISTER_ENDPOINT = "/register";
-  const LOGIN_ENDPOINT = "/login";
-
-  const registerUser = async (userData: { email: string; password: string }) => {
-    const response = await apiCall("POST", REGISTER_ENDPOINT, { data: userData });  
-    return response;
-  };
-
-  const loginUser = async (userData: { email: string; password: string }) => {
-    const response = await apiCall("POST", LOGIN_ENDPOINT, { data: userData });
-    return response;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
-    setError(null);
 
     try {
-      const userData = { email, password };
-      const response = type === "register" ? await registerUser(userData) : await loginUser(userData);
-      dispatch(setUser({
-        user: response.data.user,
-        accessToken: response.data.accessToken,
-        refreshToken: response.data.refreshToken,
-      }));
-      dispatch(closeModal());     
+      const response = await getTokenAndSetCookie(
+        formData.email,
+        formData.password,
+        `/${type}`
+      );
+
+      dispatch(
+        setUser({
+          user: response.data.user,
+          accessToken: response.data.accessToken,
+          refreshToken: response.data.refreshToken,
+        })
+      );
+      dispatch(closeModal());
+
+      router.push("/job-list");
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: (err as any).response.data.message,
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+      });
     } finally {
       setLoading(false);
     }
@@ -86,8 +94,8 @@ const AuthModal: React.FC = () => {
               type="email"
               id="email"
               name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.email}
+              onChange={handleInputChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               required
             />
@@ -103,8 +111,8 @@ const AuthModal: React.FC = () => {
               type="password"
               id="password"
               name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={formData.password}
+              onChange={handleInputChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               required
             />
@@ -115,11 +123,14 @@ const AuthModal: React.FC = () => {
               className="bg-blue-500 w-full mt-1 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors"
               disabled={loading}
             >
-              {loading ? "Yükleniyor..." : (type === "register" ? "Kayıt Ol" : "Giriş Yap")}
+              {loading
+                ? "Yükleniyor..."
+                : type === "register"
+                ? "Kayıt Ol"
+                : "Giriş Yap"}
             </button>
           </div>
         </form>
-        {error && <p className="text-red-500 mt-2">{error}</p>}
         <div className="mt-6 text-center">
           {type === "register" ? (
             <>
