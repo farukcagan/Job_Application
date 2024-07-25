@@ -1,4 +1,6 @@
+import { deleteCookie } from "@/app/api/login/route";
 import axios, { AxiosRequestConfig, Method } from "axios";
+import { Router } from "next/router";
 import Cookies from "universal-cookie";
 
 interface ApiResponse<T> {
@@ -10,19 +12,19 @@ interface ApiResponse<T> {
 async function apiCall<T>(
   method: Method,
   endpoint: string,
-  config?: AxiosRequestConfig,
+  router: Router, 
+  config?: AxiosRequestConfig
 ): Promise<ApiResponse<T>> {
   const cookies = new Cookies();
   const token = cookies.get("token") ?? null;
-
   try {
     const response = await axios({
       method,
       url: process.env.NEXT_PUBLIC_BASE_URL + `api` + endpoint,
       headers: {
         "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": `Bearer ${token}`,
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
       },
       ...config,
     });
@@ -33,7 +35,11 @@ async function apiCall<T>(
     };
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
-      throw new Error(error.response.data.message || "An error occurred");
+      if (error.response.status === 401) {
+        await deleteCookie("token");
+        router.push("/");
+      }
+      throw new Error(error.response.data.message);
     } else {
       throw new Error("An unknown error occurred");
     }
