@@ -72,7 +72,7 @@ const Header: React.FC = () => {
           </div>
           <div className="ml-4">
             <Image
-              src={profileImage?.replace(/"/g, "") || ""} 
+              src={profileImage?.replace(/"/g, "") || "/images/logo.png"} 
               alt="Profile Picture"
               width={30}
               height={30}
