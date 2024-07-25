@@ -38,7 +38,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full flex justify-between items-center p-4 bg-white text-black shadow-lg z-50">
+    <header className="fixed top-0 w-full left-0 flex justify-between items-center p-4 bg-white text-black shadow-lg z-50">
       <div className="text-xl font-bold ml-4">
         <a href="/">
           <Image
@@ -72,7 +72,7 @@ const Header: React.FC = () => {
           </div>
           <div className="ml-4">
             <Image
-              src={profileImage?.replace(/"/g, "") || "/images/logo.png"} 
+              src={profileImage?.replace(/"/g, "") || "/images/logo.png"}
               alt="Profile Picture"
               width={30}
               height={30}
