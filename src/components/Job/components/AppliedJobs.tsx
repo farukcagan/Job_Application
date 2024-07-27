@@ -1,59 +1,28 @@
-import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import React from "react";
 
 interface Job {
-  jobName: string;
+  name: string;
   companyName: string;
   location: string;
 }
 
-const exampleJobs: Job[] = [
-  {
-    jobName: "Job Name",
-    companyName: "Ipsum Dolor",
-    location: "Irving",
-  },
-  {
-    jobName: "Job Name",
-    companyName: "Ipsum Dolor",
-    location: "Irving",
-  },
-  {
-    jobName: "Job Name",
-    companyName: "Ipsum Dolor",
-    location: "Irving",
-  }, {
-    jobName: "Job Name",
-    companyName: "Ipsum Dolor",
-    location: "Irving",
-  },
-  {
-    jobName: "Job Name",
-    companyName: "Ipsum Dolor",
-    location: "Irving",
-  },
-  {
-    jobName: "Job Name",
-    companyName: "Ipsum Dolor",
-    location: "Irving",
-  },
-];
+interface AppliedJobsProps {
+  appliedJobs: Job[];
+  user: {
+    profileImage: string;
+    email: string;
+  } | null;
+}
 
-const AppliedJobs: React.FC = () => {
-  const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [email, setEmail] = useState<string | null>(null);
-
-  useEffect(() => {
-    setEmail(localStorage.getItem("email"));
-    setProfileImage(localStorage.getItem("profileImage"));
-  }, []);
-
+const AppliedJobs: React.FC<AppliedJobsProps> = ({ appliedJobs, user }) => {
+  console.log(appliedJobs);
   return (
     <div className="p-4 mt-2 mr-4  ml-4 bg-white rounded-md space-y-6 text-center">
       <div className="items-center">
         <div className="flex justify-center mb-5">
           <Image
-            src={profileImage?.replace(/"/g, "") || "/images/logo.png"}
+            src={user?.profileImage?.replace(/"/g, "") || "/images/logo.png"}
             alt="Profile Picture"
             width={50}
             height={50}
@@ -61,7 +30,7 @@ const AppliedJobs: React.FC = () => {
           />
         </div>
         <div>
-          <h2 className="text-sm font-bold">{email?.replace(/"/g, "")}</h2>
+          <h2 className="text-sm font-bold">{user?.email?.replace(/"/g, "")}</h2>
         </div>
         <div className="mt-6">
           <span className="text-xl font-bold">Applied Jobs</span>
@@ -69,12 +38,12 @@ const AppliedJobs: React.FC = () => {
       </div>
 
       <div className="max-h-[400px] overflow-y-auto cursor-pointer space-y-4 p-2">
-        {exampleJobs.map((job, index) => (
+        {appliedJobs.map((job, index) => (
           <div
             key={index}
             className="card bg-green-50 border p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow"
           >
-            <h3 className="text-lg font-semibold mb-2">{job.jobName}</h3>
+            <h3 className="text-lg font-semibold mb-2">{job.name}</h3>
             <p className="text-gray-700 mb-2">
               Company Name: {job.companyName}
             </p>
