@@ -25,11 +25,15 @@ export async function getTokenAndSetCookie(
     );
 
     const token = response.data.accessToken;
+    const refreshToken = response.data.refreshToken;
 
+    console.log(token, refreshToken);
     const expires = new Date();
     expires.setDate(expires.getDate() + 1);
 
     cookies.set("token", token, { path: "/", expires: expires });
+    cookies.set("refreshToken", refreshToken, { path: "/", expires: expires });
+
 
     localStorage.setItem("email", response.data.user.email);
     localStorage.setItem("profileImage", response.data.user.profileImage);

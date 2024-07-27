@@ -9,12 +9,12 @@ const options = [
 
 function BasicFilter() {
   return (
-    <div className="p-2">
-      <div className="flex  rounded-md bg-white w-full p-3 items-center">
-        <div className="flex-1">
-          <span>Basic Filter</span>
+    <div className="lg:p-2">
+      <div className="flex flex-col lg:flex-row gap-4 bg-white p-4 rounded-md shadow-md">
+        <div className="flex-1 self-center">
+          <span className="text-md self-center font-semibold">Basic Filter</span>
         </div>
-        <div className="flex-1 mr-2">
+        <div className="flex-1">
           <Select
             options={options}
             className="w-full"
