@@ -47,11 +47,12 @@ const JobsList: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [searchField, setSearchField] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const router: any = useRouter();
 
   const showAlert = useCallback(
-    (title: string, text: string, icon: "success" | "error") => {
+    (title: string, text: string, icon: "success" | "error" | "warning") => {
       Swal.fire({
         toast: true,
         position: "top-end",
@@ -89,7 +90,7 @@ const JobsList: React.FC = () => {
         "error"
       );
     }
-  }, [page, perPage, searchField, searchQuery, router, showAlert]);
+  }, [page, perPage, searchField, searchQuery]);
 
   const debouncedFetchJobs = useCallback(
     debounce((field, query) => {
@@ -140,13 +141,13 @@ const JobsList: React.FC = () => {
   };
 
   const handleApply = async () => {
+    setIsLoading(true);
     if (selectedJob) {
       if (user?.appliedJobs.includes(selectedJob.id)) {
         showAlert("Error!", "Bu işe zaten başvuru yaptınız.", "error");
         closeModal();
         return;
       }
-
       try {
         const response = await apiCall(
           "POST",
@@ -161,6 +162,7 @@ const JobsList: React.FC = () => {
             "success"
           );
           closeModal();
+          setIsLoading(false);
         }
       } catch (error) {
         showAlert(
@@ -169,6 +171,8 @@ const JobsList: React.FC = () => {
             "An error occurred while applying for the job",
           "error"
         );
+        closeModal();
+        setIsLoading(false);
       }
     }
   };
@@ -243,43 +247,50 @@ const JobsList: React.FC = () => {
     fetchJobs();
   };
 
+  const options = [
+    { value: "", label: "Aramak istediğiniz alanı seçiniz" },
+    { value: "name", label: "Name" },
+    { value: "companyName", label: "Company Name" },
+    { value: "location", label: "Location" },
+    { value: "salary", label: "Salary" },
+  ];
+
   return (
     <div className="relative z-50 w-full">
       <div className="flex">
         <div className="w-3/5">
-          <div className="flex flex-col lg:flex-row gap-4 bg-white p-4 rounded-md shadow-md">
-            <div className="flex-1 self-center">
-              <span className="text-md self-center font-semibold">
-                Basic Filter
-              </span>
-            </div>
-            <div className="flex-1">
-              <Select
-                options={[
-                  { value: "name", label: "Name" },
-                  { value: "companyName", label: "Company Name" },
-                  { value: "location", label: "Location" },
-                  { value: "salary", label: "Salary" },
-                ]}
-                className="w-full"
-                classNamePrefix="select"
-                onChange={(option) =>
-                  setSearchField(option?.value || "companyName")
-                }
-              />
-            </div>
-            <div className="flex-1 relative">
-              <input
-                type="text"
-                placeholder="Search..."
-                className="border border-gray-300 rounded-md py-2 px-4 pl-10 w-full"
-                onChange={handleSearchChange}
-                ref={searchInputRef}
-              />
-              <FiSearch
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-                onClick={handleSearchClick}
-              />
+          <div className="lg:p-2">
+            <div className="flex flex-col lg:flex-row gap-4 bg-white p-4 rounded-md shadow-md">
+              <div className="flex-1 self-center">
+                <span className="text-md self-center font-semibold">
+                  Basic Filter
+                </span>
+              </div>
+              <div className="flex-1">
+                <Select
+                  options={options}
+                  className="w-full"
+                  classNamePrefix="select"
+                  defaultValue={{
+                    value: "",
+                    label: "Aramak istediğiniz alanı seçiniz",
+                  }}
+                  onChange={(option) => setSearchField(option?.value || "")}
+                />
+              </div>
+              <div className="flex-1 relative">
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  className="border border-gray-300 rounded-md py-2 px-4 pl-10 w-full"
+                  onChange={handleSearchChange}
+                  ref={searchInputRef}
+                />
+                <FiSearch
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                  onClick={handleSearchClick}
+                />
+              </div>
             </div>
           </div>
           <JobsContent
@@ -296,6 +307,7 @@ const JobsList: React.FC = () => {
             appliedJobs={user?.appliedJobs || []}
             handleApply={handleApply}
             handleWithDraw={handleWithDraw}
+            isLoading={isLoading}
           />
         </div>
         <div className="w-2/5">

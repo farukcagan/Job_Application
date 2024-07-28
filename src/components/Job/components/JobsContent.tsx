@@ -26,7 +26,8 @@ interface JobsContentProps {
   selectedJob: Job | null;
   handleApply: () => void;
   handleWithDraw: (jobId: string) => void;
-  appliedJobs: string[]; 
+  appliedJobs: string[];
+  isLoading: boolean;
 }
 
 const JobsContent: React.FC<JobsContentProps> = ({
@@ -42,9 +43,9 @@ const JobsContent: React.FC<JobsContentProps> = ({
   selectedJob,
   handleApply,
   handleWithDraw,
-  appliedJobs, 
+  appliedJobs,
+  isLoading,
 }) => {
-  
   const perPageOptions = [
     { value: 5, label: "5" },
     { value: 10, label: "10" },
@@ -59,6 +60,7 @@ const JobsContent: React.FC<JobsContentProps> = ({
           job={selectedJob}
           onClose={closeModal}
           onApply={handleApply}
+          isLoading={isLoading}
         />
       )}
       <div className="max-h-[500px] overflow-y-auto space-y-4">

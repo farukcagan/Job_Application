@@ -21,16 +21,20 @@ const AppliedJobs: React.FC<AppliedJobsProps> = ({ appliedJobs, user }) => {
     <div className="p-4 mt-2 mr-4  ml-4 bg-white rounded-md space-y-6 text-center">
       <div className="items-center">
         <div className="flex justify-center mb-5">
-          <Image
-            src={user?.profileImage?.replace(/"/g, "") || "/images/logo.png"}
-            alt="Profile Picture"
-            width={50}
-            height={50}
-            className="rounded-full"
-          />
+          {user?.profileImage && (
+            <Image
+              src={user?.profileImage?.replace(/"/g, "") || ""}
+              alt="Profile Picture"
+              width={50}
+              height={50}
+              className="rounded-full"
+            />
+          )}
         </div>
         <div>
-          <h2 className="text-sm font-bold">{user?.email?.replace(/"/g, "")}</h2>
+          <h2 className="text-sm font-bold">
+            {user?.email?.replace(/"/g, "")}
+          </h2>
         </div>
         <div className="mt-6">
           <span className="text-xl font-bold">Applied Jobs</span>

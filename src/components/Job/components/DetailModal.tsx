@@ -14,12 +14,14 @@ interface ApplyJobModalProps {
   job: Job;
   onClose: () => void;
   onApply: () => void;
+  isLoading: boolean;
 }
 
 const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
   job,
   onClose,
   onApply,
+  isLoading,
 }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
@@ -67,9 +69,10 @@ const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
           </button>
           <button
             onClick={onApply}
+            disabled={isLoading}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
           >
-            Apply
+            {isLoading ? "Applying..." : "Apply"}
           </button>
         </div>
       </div>
