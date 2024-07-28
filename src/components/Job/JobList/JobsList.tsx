@@ -1,11 +1,13 @@
 "use client";
-import React, { useEffect, useState, useCallback } from "react";
-import BasicFilter from "../components/BasicFilter";
-import JobsContent from "../components/JobsContent";
-import AppliedJobs from "../components/AppliedJobs";
 import apiCall from "@/utils/ApiCall";
 import { useRouter } from "next/navigation";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { FiSearch } from "react-icons/fi";
+import Select from "react-select";
 import Swal from "sweetalert2";
+import AppliedJobs from "../components/AppliedJobs";
+import JobsContent from "../components/JobsContent";
+import { debounce } from "lodash";
 
 interface Job {
   companyName: string;
@@ -25,6 +27,15 @@ interface User {
   email: string;
 }
 
+interface Params {
+  page: number;
+  perPage: number;
+  search?: {
+    field: string;
+    query: string;
+  };
+}
+
 const JobsList: React.FC = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [appliedJobs, setAppliedJobs] = useState<Job[]>([]);
@@ -34,6 +45,9 @@ const JobsList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [searchField, setSearchField] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const router: any = useRouter();
 
   const showAlert = useCallback(
@@ -53,9 +67,19 @@ const JobsList: React.FC = () => {
 
   const fetchJobs = useCallback(async () => {
     try {
-      const { data } = await apiCall("GET", "/jobs", router, {
-        params: { page, perPage },
-      });
+      const params: Params = {
+        page,
+        perPage,
+      };
+
+      if (searchQuery !== "" && searchField !== "") {
+        params.search = {
+          field: searchField,
+          query: searchQuery,
+        };
+      }
+
+      const { data } = await apiCall("GET", "/jobs", router, { params });
       setJobs(data.data);
       setTotalJobs(data.meta.total);
     } catch (error) {
@@ -65,7 +89,16 @@ const JobsList: React.FC = () => {
         "error"
       );
     }
-  }, [page, perPage, router, showAlert]);
+  }, [page, perPage, searchField, searchQuery, router, showAlert]);
+
+  const debouncedFetchJobs = useCallback(
+    debounce((field, query) => {
+      setSearchField(field);
+      setSearchQuery(query);
+      fetchJobs();
+    }, 1000),
+    [fetchJobs]
+  );
 
   const userDetails = useCallback(async () => {
     try {
@@ -105,7 +138,7 @@ const JobsList: React.FC = () => {
     setIsModalOpen(false);
     setSelectedJob(null);
   };
-  
+
   const handleApply = async () => {
     if (selectedJob) {
       if (user?.appliedJobs.includes(selectedJob.id)) {
@@ -149,7 +182,7 @@ const JobsList: React.FC = () => {
         cancelButtonColor: "#d33",
         confirmButtonColor: "#3085d6",
         cancelButtonText: "İptal",
-        confirmButtonText: "Evet!",
+        confirmButtonText: "Geri al",
       });
 
       if (result.isConfirmed) {
@@ -202,11 +235,53 @@ const JobsList: React.FC = () => {
     getAppliedJobs();
   }, [user, getAppliedJobs]);
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    debouncedFetchJobs(searchField, e.target.value);
+  };
+
+  const handleSearchClick = () => {
+    fetchJobs();
+  };
+
   return (
     <div className="relative z-50 w-full">
       <div className="flex">
         <div className="w-3/5">
-          <BasicFilter />
+          <div className="flex flex-col lg:flex-row gap-4 bg-white p-4 rounded-md shadow-md">
+            <div className="flex-1 self-center">
+              <span className="text-md self-center font-semibold">
+                Basic Filter
+              </span>
+            </div>
+            <div className="flex-1">
+              <Select
+                options={[
+                  { value: "name", label: "Name" },
+                  { value: "companyName", label: "Company Name" },
+                  { value: "location", label: "Location" },
+                  { value: "salary", label: "Salary" },
+                ]}
+                className="w-full"
+                classNamePrefix="select"
+                onChange={(option) =>
+                  setSearchField(option?.value || "companyName")
+                }
+              />
+            </div>
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="border border-gray-300 rounded-md py-2 px-4 pl-10 w-full"
+                onChange={handleSearchChange}
+                ref={searchInputRef}
+              />
+              <FiSearch
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                onClick={handleSearchClick}
+              />
+            </div>
+          </div>
           <JobsContent
             jobs={jobs}
             page={page}
@@ -218,6 +293,7 @@ const JobsList: React.FC = () => {
             closeModal={closeModal}
             isModalOpen={isModalOpen}
             selectedJob={selectedJob}
+            appliedJobs={user?.appliedJobs || []}
             handleApply={handleApply}
             handleWithDraw={handleWithDraw}
           />
