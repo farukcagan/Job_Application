@@ -16,7 +16,6 @@ interface AppliedJobsProps {
 }
 
 const AppliedJobs: React.FC<AppliedJobsProps> = ({ appliedJobs, user }) => {
-  console.log(appliedJobs);
   return (
     <div className="p-4 mt-2 mr-4  ml-4 bg-white rounded-md space-y-6 text-center">
       <div className="items-center">

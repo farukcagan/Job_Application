@@ -46,15 +46,7 @@ const Header: React.FC = () => {
   return (
     <header className="fixed top-0 w-full left-0 flex justify-between items-center p-4 bg-white text-black shadow-lg z-50" style={{ height: '80px' }}>
       <div className="text-xl font-bold ml-4">
-        <a href="/">
-          <Image
-            src="/images/logo.png"
-            alt="Logo"
-            width={100}
-            height={70}
-            className="hover:opacity-75 transition-opacity duration-300"
-          />
-        </a>
+        ACME
       </div>
       {!auth ? (
         <div className="mr-4 block text-center">

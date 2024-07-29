@@ -27,7 +27,6 @@ export async function getTokenAndSetCookie(
     const token = response.data.accessToken;
     const refreshToken = response.data.refreshToken;
 
-    console.log(token, refreshToken);
     const expires = new Date();
     expires.setDate(expires.getDate() + 1);
 
