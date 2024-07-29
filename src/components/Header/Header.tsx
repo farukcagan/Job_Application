@@ -38,6 +38,7 @@ const Header: React.FC = () => {
 
   const handleLogoutClick = async () => {
     await deleteCookie("token");
+    await deleteCookie("refreshToken");
     dispatch(clearUser());
     localStorage.clear();
     router.push("/");

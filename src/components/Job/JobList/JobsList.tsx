@@ -278,18 +278,6 @@ const JobsList: React.FC = () => {
               </div>
               <div className="flex-1">
                 <Select
-                  options={options}
-                  className="w-full"
-                  classNamePrefix="select"
-                  defaultValue={{
-                    value: "",
-                    label: "Aramak istediğiniz alanı seçiniz",
-                  }}
-                  onChange={(option) => setSearchField(option?.value || "")}
-                />
-              </div>{" "}
-              <div className="flex-1">
-                <Select
                   options={[
                     { value: "asc", label: "maaşa göre artan" },
                     { value: "desc", label: "maaşa göre azalan" },
@@ -298,11 +286,23 @@ const JobsList: React.FC = () => {
                   classNamePrefix="select"
                   defaultValue={{
                     value: "",
-                    label: "sıralama türü seçiniz",
+                    label: "sıralama türü",
                   }}
                   onChange={(option: { value: string; label: string } | null) =>
                     setOrder((option?.value as "desc" | "asc") || "asc")
                   }
+                />
+              </div>
+              <div className="flex-1">
+                <Select
+                  options={options}
+                  className="w-full"
+                  classNamePrefix="select"
+                  defaultValue={{
+                    value: "",
+                    label: "Arama alanı",
+                  }}
+                  onChange={(option) => setSearchField(option?.value || "")}
                 />
               </div>
               <div className="flex-1 relative">
