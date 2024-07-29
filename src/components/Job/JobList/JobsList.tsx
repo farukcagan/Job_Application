@@ -34,6 +34,10 @@ interface Params {
     field: string;
     query: string;
   };
+  orderBy?: {
+    field: string;
+    direction: "asc" | "desc";
+  };
 }
 
 const JobsList: React.FC = () => {
@@ -48,6 +52,8 @@ const JobsList: React.FC = () => {
   const [searchField, setSearchField] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const [orderBy, setOrderBy] = useState<string>("salary");
+  const [order, setOrder] = useState<"asc" | "desc">("asc");
   const searchInputRef = useRef<HTMLInputElement>(null);
   const router: any = useRouter();
 
@@ -73,6 +79,11 @@ const JobsList: React.FC = () => {
         perPage,
       };
 
+      params.orderBy = {
+        field: "salary",
+        direction: order,
+      };
+
       if (searchQuery !== "" && searchField !== "") {
         params.search = {
           field: searchField,
@@ -90,14 +101,14 @@ const JobsList: React.FC = () => {
         "error"
       );
     }
-  }, [page, perPage, searchField, searchQuery]);
+  }, [page, perPage, searchField, searchQuery, order]);
 
   const debouncedFetchJobs = useCallback(
     debounce((field, query) => {
       setSearchField(field);
       setSearchQuery(query);
       fetchJobs();
-    }, 1000),
+    }, 500),
     [fetchJobs]
   );
 
@@ -248,7 +259,6 @@ const JobsList: React.FC = () => {
   };
 
   const options = [
-    { value: "", label: "Aramak istediğiniz alanı seçiniz" },
     { value: "name", label: "Name" },
     { value: "companyName", label: "Company Name" },
     { value: "location", label: "Location" },
@@ -257,9 +267,9 @@ const JobsList: React.FC = () => {
 
   return (
     <div className="relative z-50 w-full">
-      <div className="flex">
-        <div className="w-3/5">
-          <div className="lg:p-2">
+      <div className="flex flex-col lg:flex-row">
+        <div className="w-full lg:w-3/5">
+          <div className="p-2">
             <div className="flex flex-col lg:flex-row gap-4 bg-white p-4 rounded-md shadow-md">
               <div className="flex-1 self-center">
                 <span className="text-md self-center font-semibold">
@@ -276,6 +286,23 @@ const JobsList: React.FC = () => {
                     label: "Aramak istediğiniz alanı seçiniz",
                   }}
                   onChange={(option) => setSearchField(option?.value || "")}
+                />
+              </div>{" "}
+              <div className="flex-1">
+                <Select
+                  options={[
+                    { value: "asc", label: "maaşa göre artan" },
+                    { value: "desc", label: "maaşa göre azalan" },
+                  ]}
+                  className="w-full"
+                  classNamePrefix="select"
+                  defaultValue={{
+                    value: "",
+                    label: "sıralama türü seçiniz",
+                  }}
+                  onChange={(option: { value: string; label: string } | null) =>
+                    setOrder((option?.value as "desc" | "asc") || "asc")
+                  }
                 />
               </div>
               <div className="flex-1 relative">
@@ -310,7 +337,7 @@ const JobsList: React.FC = () => {
             isLoading={isLoading}
           />
         </div>
-        <div className="w-2/5">
+        <div className="w-full lg:w-2/5">
           <AppliedJobs appliedJobs={appliedJobs} user={user} />
         </div>
       </div>

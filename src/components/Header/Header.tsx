@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { clearUser } from "@/redux/slices/authSlice";
 import { openModal } from "@/redux/slices/modalSlice";
 import { AppDispatch } from "@/redux/store";
+import apiCall from "@/utils/ApiCall";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -13,13 +14,18 @@ import { useDispatch } from "react-redux";
 const Header: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const auth = useAuth();
-  const router = useRouter();
+  const router: any = useRouter();
   const [email, setEmail] = useState<string | null>(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
+  const fetchData = async () => {
+    const { data } = await apiCall("GET", "/profile", router);
+    setEmail(data.email);
+    setProfileImage(data.profileImage);
+  };
+
   useEffect(() => {
-    setEmail(localStorage.getItem("email"));
-    setProfileImage(localStorage.getItem("profileImage"));
+    fetchData();
   }, []);
 
   const openRegisterModal = () => {
@@ -38,7 +44,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="fixed top-0 w-full left-0 flex justify-between items-center p-4 bg-white text-black shadow-lg z-50">
+    <header className="fixed top-0 w-full left-0 flex justify-between items-center p-4 bg-white text-black shadow-lg z-50" style={{ height: '80px' }}>
       <div className="text-xl font-bold ml-4">
         <a href="/">
           <Image
@@ -51,7 +57,7 @@ const Header: React.FC = () => {
         </a>
       </div>
       {!auth ? (
-        <div className="mr-4">
+        <div className="mr-4 block text-center">
           <button onClick={openLoginModal}>
             <span className="mr-4 text-black hover:text-gray-600">Login</span>
           </button>
@@ -61,8 +67,8 @@ const Header: React.FC = () => {
         </div>
       ) : (
         <div className="flex items-center">
-          <div className="mr-4">
-            <button>
+        <div className="mr-4 block text-center">
+        <button>
               <span className="mr-4 text-blue-500">Jobs List</span>
             </button>
             <button onClick={handleLogoutClick}>
@@ -71,13 +77,15 @@ const Header: React.FC = () => {
             <span className="ml-4">{email?.replace(/"/g, "")}</span>
           </div>
           <div className="ml-4">
-            <Image
-              src={profileImage?.replace(/"/g, "") || "/images/logo.png"}
-              alt="Profile Picture"
-              width={30}
-              height={30}
-              className="rounded-full"
-            />
+            {profileImage && (
+              <Image
+                src={profileImage?.replace(/"/g, "") || ""}
+                alt="Profile Picture"
+                width={30}
+                height={30}
+                className="rounded-full"
+              />
+            )}
           </div>
         </div>
       )}

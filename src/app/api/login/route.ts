@@ -34,11 +34,6 @@ export async function getTokenAndSetCookie(
     cookies.set("token", token, { path: "/", expires: expires });
     cookies.set("refreshToken", refreshToken, { path: "/", expires: expires });
 
-
-    localStorage.setItem("email", response.data.user.email);
-    localStorage.setItem("profileImage", response.data.user.profileImage);
-
-
     return response;
   } catch (error) {
     throw error;
