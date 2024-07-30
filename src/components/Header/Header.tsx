@@ -25,8 +25,10 @@ const Header: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (auth) {
+      fetchData();
+    }
+  }, [auth]);
 
   const openRegisterModal = () => {
     dispatch(openModal("register"));
