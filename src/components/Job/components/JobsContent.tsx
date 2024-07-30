@@ -1,17 +1,8 @@
 import React from "react";
 import Select from "react-select";
 import ApplyJobModal from "./DetailModal";
+import { Job } from "@/types/types";
 
-interface Job {
-  companyName: string;
-  keywords: string[];
-  id: string;
-  description: string;
-  name: string;
-  createdAt: string;
-  location: string;
-  salary: number;
-}
 
 interface JobsContentProps {
   jobs: Job[];
@@ -46,7 +37,7 @@ const JobsContent: React.FC<JobsContentProps> = ({
   appliedJobs,
   isLoading,
 }) => {
-  
+
   const perPageOptions = [
     { value: 5, label: "5" },
     { value: 10, label: "10" },

@@ -1,14 +1,6 @@
+import { Job } from "@/types/types";
 import React from "react";
 
-interface Job {
-  companyName: string;
-  name: string;
-  createdAt: string;
-  location: string;
-  keywords: string[];
-  salary: number;
-  description: string;
-}
 
 interface ApplyJobModalProps {
   job: Job;

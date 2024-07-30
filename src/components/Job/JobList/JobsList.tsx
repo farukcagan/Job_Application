@@ -8,25 +8,7 @@ import Swal from "sweetalert2";
 import AppliedJobs from "../components/AppliedJobs";
 import JobsContent from "../components/JobsContent";
 import { debounce } from "lodash";
-
-interface Job {
-  companyName: string;
-  keywords: string[];
-  id: string;
-  description: string;
-  name: string;
-  createdAt: string;
-  location: string;
-  salary: number;
-}
-
-interface User {
-  appliedJobs: string[];
-  profileImage: string;
-  id: string;
-  email: string;
-}
-
+import { Job, User } from "@/types/types";
 interface Params {
   page: number;
   perPage: number;
@@ -154,7 +136,8 @@ const JobsList: React.FC = () => {
     setIsLoading(true);
     if (selectedJob) {
       if (user?.appliedJobs.includes(selectedJob.id)) {
-        showAlert("Error!", "Bu işe zaten başvuru yaptınız.", "error");
+        showAlert("Error!", "You have already applied for this job.", "error");
+        setIsLoading(false);
         closeModal();
         return;
       }
@@ -190,13 +173,13 @@ const JobsList: React.FC = () => {
   const handleWithDraw = async (jobId: string) => {
     try {
       const result = await Swal.fire({
-        text: "İş başvurunuz geri alınacaktır!",
+        text: "Your job application will be withdrawn!",
         icon: "warning",
         showCancelButton: true,
         cancelButtonColor: "#d33",
         confirmButtonColor: "#3085d6",
-        cancelButtonText: "İptal",
-        confirmButtonText: "Geri al",
+        cancelButtonText: "Cancel",
+        confirmButtonText: "Withdraw",
       });
 
       if (result.isConfirmed) {
@@ -278,14 +261,14 @@ const JobsList: React.FC = () => {
               <div className="flex-1">
                 <Select
                   options={[
-                    { value: "asc", label: "maaşa göre artan" },
-                    { value: "desc", label: "maaşa göre azalan" },
+                    { value: "asc", label: "ascending by salary" },
+                    { value: "desc", label: "descending by salary" },
                   ]}
                   className="w-full"
                   classNamePrefix="select"
                   defaultValue={{
                     value: "",
-                    label: "sıralama türü",
+                    label: "sort type",
                   }}
                   onChange={(option: { value: string; label: string } | null) =>
                     setOrder((option?.value as "desc" | "asc") || "asc")
@@ -299,7 +282,7 @@ const JobsList: React.FC = () => {
                   classNamePrefix="select"
                   defaultValue={{
                     value: "",
-                    label: "Arama alanı",
+                    label: "Search field",
                   }}
                   onChange={(option) => setSearchField(option?.value || "")}
                 />

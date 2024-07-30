@@ -80,7 +80,7 @@ const AuthModal: React.FC = () => {
           <AiOutlineClose className="h-6 w-6" />
         </button>
         <h2 className="text-xl font-bold mb-4">
-          {type === "register" ? "Kayıt Ol" : "Giriş Yap"}
+          {type === "register" ? "Sign Up" : "Sign In"}
         </h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -88,7 +88,7 @@ const AuthModal: React.FC = () => {
               htmlFor="email"
               className="block text-sm font-medium text-gray-700"
             >
-              E-posta
+              E-mail
             </label>
             <input
               type="email"
@@ -105,7 +105,7 @@ const AuthModal: React.FC = () => {
               htmlFor="password"
               className="block text-sm font-medium text-gray-700"
             >
-              Şifre
+              Password
             </label>
             <input
               type="password"
@@ -124,34 +124,32 @@ const AuthModal: React.FC = () => {
               disabled={loading}
             >
               {loading
-                ? "Yükleniyor..."
+                ? "Loading..."
                 : type === "register"
-                ? "Kayıt Ol"
-                : "Giriş Yap"}
+                ? "Sign Up"
+                : "Sign In"}
             </button>
           </div>
         </form>
         <div className="mt-6 text-center">
           {type === "register" ? (
             <>
-              <span className="text-gray-700">
-                Zaten bir hesabınız var mı?{" "}
-              </span>
+              <span className="text-gray-700">Already have an account?  </span>
               <span
                 onClick={() => dispatch(openModal("login"))}
                 className="text-indigo-600 cursor-pointer"
               >
-                Giriş Yap
+                Sign In
               </span>
             </>
           ) : (
             <>
-              <span className="text-gray-700">Hesabınız yok mu? </span>
+              <span className="text-gray-700">Don't have an account? </span>
               <span
                 onClick={() => dispatch(openModal("register"))}
                 className="text-indigo-600 cursor-pointer"
               >
-                Kayıt Ol
+                Sign Up
               </span>
             </>
           )}
