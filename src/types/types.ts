@@ -3,7 +3,6 @@ export interface ApiResponse<T> {
     accessToken?: string;
     refreshToken?: string;
   }
-  
 export interface Job {
   companyName: string;
   keywords: string[];
@@ -14,7 +13,6 @@ export interface Job {
   location: string;
   salary: number;
 }
-
 export interface User {
   appliedJobs: string[];
   profileImage: string;
