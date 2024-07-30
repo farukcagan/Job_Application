@@ -236,10 +236,6 @@ const JobsList: React.FC = () => {
     debouncedFetchJobs(searchField, e.target.value);
   };
 
-  const handleSearchClick = () => {
-    fetchJobs();
-  };
-
   const options = [
     { value: "name", label: "Name" },
     { value: "companyName", label: "Company Name" },
@@ -297,7 +293,6 @@ const JobsList: React.FC = () => {
                 />
                 <FiSearch
                   className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-                  onClick={handleSearchClick}
                 />
               </div>
             </div>
