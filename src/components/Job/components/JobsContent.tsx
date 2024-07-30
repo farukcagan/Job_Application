@@ -46,6 +46,7 @@ const JobsContent: React.FC<JobsContentProps> = ({
   appliedJobs,
   isLoading,
 }) => {
+  
   const perPageOptions = [
     { value: 5, label: "5" },
     { value: 10, label: "10" },

@@ -52,7 +52,6 @@ const JobsList: React.FC = () => {
   const [searchField, setSearchField] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
-  const [orderBy, setOrderBy] = useState<string>("salary");
   const [order, setOrder] = useState<"asc" | "desc">("asc");
   const searchInputRef = useRef<HTMLInputElement>(null);
   const router: any = useRouter();
