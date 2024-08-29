@@ -3,7 +3,7 @@ import JobsList from "@/components/Job/JobList/JobsList";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "SHFT - Home Page",
+  title: "Job Application  - Home Page",
   description: "Home page",
 };
 
